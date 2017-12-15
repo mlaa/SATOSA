@@ -211,6 +211,11 @@ class SAMLBackend(BackendModule, SAMLBaseModule):
             authn_response = self.sp.parse_authn_request_response(
                 context.request["SAMLResponse"],
                 binding, outstanding=self.outstanding_queries)
+
+            # Add the metadata store the SP is using to the context so that 
+            # response microservices have a hook to the metadata.
+            context.internal_data['metadata_store'] = self.sp.metadata
+
         except Exception as err:
             satosa_logging(logger, logging.DEBUG, "Failed to parse authn request for state", context.state,
                            exc_info=True)
